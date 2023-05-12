@@ -1,0 +1,55 @@
+.search {
+	width: 100%;
+	position: relative;
+
+	label {
+		position: absolute;
+		left: 12px;
+		top: 50%;
+		margin-top: -8px;
+		height: 16px;
+		width: 16px;
+		cursor: text;
+
+		svg {
+			position: absolute;
+			left: 0;
+			top: 0;
+			height: 100%;
+			width: 100%;
+			stroke: $grey-500;
+		}
+
+		@media (max-width: 600px) {
+			display: none;
+		}
+	}
+
+	input {
+		border: 1px solid $grey-200;
+		background: $white;
+		padding: 0 107px 0 36px;
+		height: 48px;
+		line-height: 48px;
+		width: 100%;
+
+		@media (max-width: 600px) {
+			padding: 0 83px 0 10px;
+		}
+	}
+}
+
+.search-button {
+	position: absolute;
+	width: 83px;
+	height: 32px;
+	line-height: 32px;
+	right: 12px;
+	top: 50%;
+	margin-top: -16px;
+
+	@media (max-width: 600px) {
+		width: 63px;
+		right: 10px;
+	}
+}

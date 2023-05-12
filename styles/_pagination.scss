@@ -1,0 +1,45 @@
+.pagination {
+	display: flex;
+	justify-content: center;
+	gap: 8px;
+	margin-top: 40px;
+}
+
+.pagination-link {
+	background: $white;
+	border: 1px solid $grey-300;
+	border-radius: 4px;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: $pagination-font;
+	transition-duration: 0.2s;
+
+	svg {
+		fill: $grey-600;
+		width: 6px;
+		height: 10px;
+	}
+
+	&.previous {
+		svg {
+			transform: rotate(180deg);
+		}
+	}
+
+	&.active {
+		background: $blue-500;
+		border: 1px solid $blue-500;
+		color: $white;
+	}
+
+	&.disabled {
+		border: 1px solid $grey-200;
+
+		svg {
+			fill: $grey-300;
+		}
+	}
+}

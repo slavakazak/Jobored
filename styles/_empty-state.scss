@@ -1,0 +1,23 @@
+.empty-state {
+	text-align: center;
+	margin-top: 120px;
+
+	h2 {
+		margin: 32px 0;
+		font-weight: 700;
+		font-size: 24px;
+		line-height: 29px;
+		color: $grey-900;
+	}
+
+	a, a:hover, a:active, a:focus {
+		font-family: $empty-state-font;
+		padding: 10px 24px;
+		background: $blue-100;
+		border-radius: 8px;
+		font-weight: 600;
+		font-size: 14px;
+		line-height: 155%;
+		color: $blue-600;
+	}
+}

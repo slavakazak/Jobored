@@ -1,11 +1,8 @@
-import { Filters } from '@/components/filters/Filters'
-import { FiltersProvider } from '@/components/filters/FiltersContext'
+import { EmptyState } from '@/components/EmptyState'
 import { JobCard } from '@/components/JobCard'
 import { MainLayout } from '@/components/MainLayout'
 import { Pagination } from '@/components/Pagination'
-import { Search } from '@/components/Search'
 import { Jobs } from '@/components/Interfaces/Jobs'
-import { EmptyState } from '@/components/EmptyState'
 
 const jobs: Jobs = [
 	{
@@ -13,6 +10,7 @@ const jobs: Jobs = [
 		salary: 'з/п от 70000 rub',
 		schedule: 'Полный рабочий день',
 		address: 'Новый Уренгой',
+		isFavorite: true,
 	},
 	{
 		job: 'Ведущий графический дизайнер НЕ УДАЛЕННО',
@@ -26,40 +24,34 @@ const jobs: Jobs = [
 		salary: 'з/п 29000 rub',
 		schedule: 'Сменный график работы',
 		address: 'Самара',
+		isFavorite: true,
 	},
 	{
 		job: 'Менеджер-дизайнер',
 		salary: 'з/п 55000 - 95000 rub',
 		schedule: 'Полный рабочий день',
 		address: 'Тюмень',
+		isFavorite: true,
 	},
 ]
 
 //const jobs: Jobs = null
 
-export default function Home() {
+export default function favorites() {
 	return (
-		<FiltersProvider>
-			<MainLayout title='Jobored | Поиск вакансий' description='Страница поиска вакансий'>
-				<div className='main-grid'>
-					<aside>
-						<Filters />
-					</aside>
-					<main>
-						<Search />
-						{!jobs || jobs.length == 0 ? (
-							<EmptyState text='Упс, здесь еще ничего нет!' link={false} />
-						) : (
-							<>
-								{jobs.map((job, i) => (
-									<JobCard key={i} {...job} />
-								))}
-								<Pagination />
-							</>
-						)}
-					</main>
-				</div>
-			</MainLayout>
-		</FiltersProvider>
+		<MainLayout title='Jobored | Избранное' description='Страница избранного'>
+			<main>
+				{!jobs || jobs.length == 0 ? (
+					<EmptyState text='Упс, здесь еще ничего нет!' />
+				) : (
+					<>
+						{jobs.map((job, i) => (
+							<JobCard key={i} {...job} />
+						))}
+						<Pagination />
+					</>
+				)}
+			</main>
+		</MainLayout>
 	)
 }

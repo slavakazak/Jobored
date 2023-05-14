@@ -1,23 +1,31 @@
 import Link from 'next/link'
+import { Job } from './Interfaces/Jobs'
 
 interface JobCard {
-	job: string
-	salary?: string
-	schedule?: string
-	address?: string
+	job: Job
 	isFavorite?: boolean
 	single?: boolean
 }
 
-export function JobCard({ job, salary, schedule, address, isFavorite = false, single = false }: JobCard) {
+export function JobCard({ job, isFavorite = false, single = false }: JobCard) {
+	let salary = ''
+
+	if (job.payment_from !== 0 && job.payment_to !== 0) {
+		salary = 'з/п ' + job.payment_from + ' - ' + job.payment_to + ' ' + job.currency
+	} else if (job.payment_from !== 0 && job.payment_to === 0) {
+		salary = 'з/п от ' + job.payment_from + ' ' + job.currency
+	} else if (job.payment_from === 0 && job.payment_to !== 0) {
+		salary = 'з/п ' + job.payment_to + ' ' + job.currency
+	}
+
 	return (
 		<div className={'job-card' + (single ? ' single' : '')}>
 			<div className='job-card-head'>
 				{single ? (
-					<h2>{job}</h2>
+					<h2>{job.profession}</h2>
 				) : (
 					<Link href={'/job'}>
-						<h2>{job}</h2>
+						<h2>{job.profession}</h2>
 					</Link>
 				)}
 				<svg viewBox='0 0 24 24' fill='none' className={'favorite' + (isFavorite ? ' active' : '')}>
@@ -27,14 +35,14 @@ export function JobCard({ job, salary, schedule, address, isFavorite = false, si
 					/>
 				</svg>
 			</div>
-			{(salary || schedule) && (
+			{(salary || job.type_of_work) && (
 				<div className='job-card-info'>
 					{salary && <div className='salary'>{salary}</div>}
-					{salary && schedule && <div className='dot'>•</div>}
-					{schedule && <div className='schedule'>{schedule}</div>}
+					{salary && job.type_of_work && <div className='dot'>•</div>}
+					{job.type_of_work && <div className='schedule'>{job.type_of_work.title}</div>}
 				</div>
 			)}
-			{address && (
+			{job.town && (
 				<div className='job-card-address'>
 					<svg viewBox='0 0 20 20' fill='none'>
 						<path
@@ -50,7 +58,7 @@ export function JobCard({ job, salary, schedule, address, isFavorite = false, si
 							strokeLinejoin='round'
 						/>
 					</svg>
-					<span>{address}</span>
+					<span>{job.town.title}</span>
 				</div>
 			)}
 		</div>

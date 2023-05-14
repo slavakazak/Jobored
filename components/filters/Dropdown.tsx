@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
+import { DropdownArrow } from '../icons/DropdownArrow'
 
 export interface Option {
 	text: string
@@ -39,7 +40,7 @@ export function Dropdown({
 		setOptionsState(filteredOptions)
 	}
 
-	function SVGMOuseHandler(e: React.MouseEvent<SVGSVGElement>) {
+	function SVGMouseHandler(e: React.MouseEvent<SVGSVGElement>) {
 		e.preventDefault()
 		if (inputRef && inputRef.current) {
 			if (dropdown) {
@@ -50,7 +51,7 @@ export function Dropdown({
 		}
 	}
 
-	function dropdownMOuseHandler(e: React.MouseEvent<HTMLDivElement>) {
+	function dropdownMouseHandler(e: React.MouseEvent<HTMLDivElement>) {
 		e.preventDefault()
 		if (inputRef && inputRef.current) {
 			inputRef.current.focus()
@@ -86,20 +87,8 @@ export function Dropdown({
 				/>
 				{optionsState && optionsState.length !== 0 && (
 					<>
-						<svg
-							className={'arrow' + (dropdown ? ' active' : '')}
-							width='24'
-							height='24'
-							viewBox='0 0 24 24'
-							fill='none'
-							onMouseDown={SVGMOuseHandler}>
-							<path
-								d='M5 9L11.2191 14.3306C11.6684 14.7158 12.3316 14.7158 12.7809 14.3306L19 9'
-								strokeWidth='1.5'
-								strokeLinecap='round'
-							/>
-						</svg>
-						<div className={'hidden-wrapper' + (dropdown ? ' active' : '')} onMouseDown={dropdownMOuseHandler}>
+						<DropdownArrow dropdown={dropdown} SVGMouseHandler={SVGMouseHandler} />
+						<div className={'hidden-wrapper' + (dropdown ? ' active' : '')} onMouseDown={dropdownMouseHandler}>
 							<div className='dropdown'>
 								<div className='scroll'>
 									{optionsState.map(option => (

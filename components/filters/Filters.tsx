@@ -1,22 +1,9 @@
 import { useFilters } from './FiltersContext'
 import { Dropdown } from './Dropdown'
 import { Range } from './Range'
-import { Option } from './Dropdown'
+import { Catalog } from '../Interfaces/Catalog'
 
-const industriesArray = [
-	'IT, интернет, связь, телеком',
-	'Кадры, управление персоналом',
-	'Искусство, культура, развлечения',
-	'Банки, инвестиции, лизинг',
-	'Дизайн',
-]
-
-const industries: Option[] = industriesArray.map((industry, i) => ({
-	text: industry,
-	id: i,
-}))
-
-export function Filters() {
+export function Filters({ catalogues }: { catalogues: Catalog[] }) {
 	const filters = useFilters()
 
 	function resetClickHandler() {
@@ -42,7 +29,13 @@ export function Filters() {
 				name='industry'
 				title='Отрасль'
 				placeholder='Выберете отрасль'
-				options={industries}
+				options={
+					catalogues &&
+					catalogues.map(catalog => ({
+						title: catalog.title,
+						key: catalog.key,
+					}))
+				}
 				value={filters.industry}
 				setValue={filters.setIndustry}
 				currentOption={filters.industryId}

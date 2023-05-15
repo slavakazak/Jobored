@@ -5,15 +5,16 @@ import { MainLayout } from '@/components/MainLayout'
 import { Pagination } from '@/components/Pagination'
 import { Search } from '@/components/Search'
 import { Vacancies } from '@/components/Interfaces/Jobs'
+import { Catalog } from '@/components/Interfaces/Catalog'
 import { EmptyState } from '@/components/EmptyState'
 
-export default function Home({ vacancies }: { vacancies: Vacancies }) {
+export default function Home({ vacancies, catalogues }: { vacancies: Vacancies; catalogues: Catalog[] }) {
 	return (
 		<FiltersProvider>
 			<MainLayout title='Jobored | Поиск вакансий' description='Страница поиска вакансий'>
 				<div className='main-grid'>
 					<aside>
-						<Filters />
+						<Filters catalogues={catalogues} />
 					</aside>
 					<main>
 						<Search />
@@ -71,7 +72,17 @@ Home.getInitialProps = async () => {
 	const vacanciesResponse = await fetch(vacanciesUrl, fetchParams)
 	const vacanciesJSON = await vacanciesResponse.json()
 
+	const cataloguesPath = '/2.0/catalogues/'
+	const cataloguesUrl = new URL(cataloguesPath, base)
+	const cataloguesSearchParams: { [key: string]: string } = {}
+	for (let key in cataloguesSearchParams) {
+		cataloguesUrl.searchParams.set(key, cataloguesSearchParams[key])
+	}
+	const cataloguesResponse = await fetch(cataloguesUrl, fetchParams)
+	const cataloguesJSON = await cataloguesResponse.json()
+
 	return {
 		vacancies: vacanciesJSON,
+		catalogues: cataloguesJSON,
 	}
 }

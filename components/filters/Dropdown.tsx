@@ -2,8 +2,8 @@ import { useState, useRef } from 'react'
 import { DropdownArrow } from '../icons/DropdownArrow'
 
 export interface Option {
-	text: string
-	id: number
+	title: string
+	key: number
 }
 
 interface Dropdown {
@@ -36,7 +36,7 @@ export function Dropdown({
 		setValue(text)
 		setCurrentOption(null)
 		const filteredOptions =
-			options && options.filter(option => option.text.trim().toLowerCase().includes(text.trim().toLowerCase()))
+			options && options.filter(option => option.title.trim().toLowerCase().includes(text.trim().toLowerCase()))
 		setOptionsState(filteredOptions)
 	}
 
@@ -63,8 +63,8 @@ export function Dropdown({
 			if (inputRef && inputRef.current) {
 				inputRef.current.blur()
 			}
-			setCurrentOption(option.id)
-			setValue(option.text)
+			setCurrentOption(option.key)
+			setValue(option.title)
 			setTimeout(() => setOptionsState(options), 200)
 		}
 	}
@@ -93,10 +93,10 @@ export function Dropdown({
 								<div className='scroll'>
 									{optionsState.map(option => (
 										<div
-											key={option.id}
-											className={'option' + (currentOption === option.id ? ' active' : '')}
+											key={option.key}
+											className={'option' + (currentOption === option.key ? ' active' : '')}
 											onClick={optionClickHandler(option)}>
-											{option.text}
+											{option.title}
 										</div>
 									))}
 								</div>

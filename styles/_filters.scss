@@ -175,25 +175,23 @@
 	}
 
 	.option {
-		height: 36px;
 		width: 100%;
 		border-radius: 8px;
-		line-height: 36px;
-		padding: 0 8px;
+		line-height: 20px;
+		padding: 8px 16px 8px 8px;
 		font-size: 14px;
 		overflow: hidden;
 		cursor: pointer;
 		transition-duration: 0.2s;
-		white-space: nowrap;
 
 		&:hover {
 			background: $blue-100;
-			padding: 0 12px;
+			padding: 8px 12px;
 		}
 
 		&.active {
 			background: $blue-500;
-			padding: 0 12px;
+			padding: 8px 12px;
 			font-weight: 500;
 			color: $white;
 		}

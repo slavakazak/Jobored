@@ -23,7 +23,16 @@ export function Header() {
 					<Logo />
 					<nav>
 						{navigateLinks.map(({ path, text }, i) => (
-							<Link key={i} href={path} className={'navigate-link' + (router.pathname === path ? ' active' : '')}>
+							<Link
+								key={i}
+								href={path}
+								className={
+									'navigate-link' +
+									(router.pathname.replace('page/[number]', '') === path ||
+									router.pathname.replace('/page/[number]', '') === path
+										? ' active'
+										: '')
+								}>
 								{text}
 							</Link>
 						))}

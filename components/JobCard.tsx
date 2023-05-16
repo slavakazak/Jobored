@@ -24,7 +24,7 @@ export function JobCard({ job, isFavorite = false, single = false }: JobCard) {
 				{single ? (
 					<h2>{job.profession}</h2>
 				) : (
-					<Link href={'/job'}>
+					<Link href='/vacancy/[id]' as={`/vacancy/${job.id}`}>
 						<h2>{job.profession}</h2>
 					</Link>
 				)}

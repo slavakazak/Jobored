@@ -19,6 +19,9 @@ export interface Job {
 	work: string
 	metro: Metro[]
 	currency: string
+	candidat?: string
+	vacancyRichText?: string
+	description?: string
 	moveable: boolean
 	agreement: boolean
 	anonymous: boolean

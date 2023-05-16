@@ -7,6 +7,8 @@ import { Search } from '@/components/Search'
 import { Vacancies } from '@/components/Interfaces/Jobs'
 import { Catalog } from '@/components/Interfaces/Catalog'
 import { EmptyState } from '@/components/EmptyState'
+import { getFetchParams, getJSON, FetchParams } from '@/utils/startupSummerAPI'
+import { GetServerSideProps } from 'next'
 
 export default function Home({ vacancies, catalogues }: { vacancies: Vacancies; catalogues: Catalog[] }) {
 	return (
@@ -35,54 +37,14 @@ export default function Home({ vacancies, catalogues }: { vacancies: Vacancies; 
 	)
 }
 
-Home.getInitialProps = async () => {
-	const base = 'https://startup-summer-2023-proxy.onrender.com'
-	const xSecretKey = 'GEU4nvd3rej*jeh.eqp'
-
-	const passwordPath = '/2.0/oauth2/password'
-	const passwordUrl = new URL(passwordPath, base)
-	const passwordSearchParams: { [key: string]: string } = {
-		login: 'sergei.stralenia@gmail.com',
-		password: 'paralect123',
-		client_id: '2356',
-		client_secret: 'v3.r.137440105.ffdbab114f92b821eac4e21f485343924a773131.06c3bdbb8446aeb91c35b80c42ff69eb9c457948',
-		hr: '0',
-	}
-	for (let key in passwordSearchParams) {
-		passwordUrl.searchParams.set(key, passwordSearchParams[key])
-	}
-	const passwordResponse = await fetch(passwordUrl, { headers: { 'x-secret-key': xSecretKey } })
-	const passwordJSON = await passwordResponse.json()
-	const AccessToken = passwordJSON.access_token
-
-	const fetchParams = {
-		headers: {
-			'x-secret-key': xSecretKey,
-			'X-Api-App-Id': passwordSearchParams.client_secret,
-			Authorization: 'Bearer ' + AccessToken,
-		},
-	}
-
-	const vacanciesPath = '/2.0/vacancies/'
-	const vacanciesUrl = new URL(vacanciesPath, base)
-	const vacanciesSearchParams: { [key: string]: string } = {}
-	for (let key in vacanciesSearchParams) {
-		vacanciesUrl.searchParams.set(key, vacanciesSearchParams[key])
-	}
-	const vacanciesResponse = await fetch(vacanciesUrl, fetchParams)
-	const vacanciesJSON = await vacanciesResponse.json()
-
-	const cataloguesPath = '/2.0/catalogues/'
-	const cataloguesUrl = new URL(cataloguesPath, base)
-	const cataloguesSearchParams: { [key: string]: string } = {}
-	for (let key in cataloguesSearchParams) {
-		cataloguesUrl.searchParams.set(key, cataloguesSearchParams[key])
-	}
-	const cataloguesResponse = await fetch(cataloguesUrl, fetchParams)
-	const cataloguesJSON = await cataloguesResponse.json()
-
+export const getServerSideProps: GetServerSideProps<{ vacancies: Vacancies; catalogues: Catalog[] }> = async () => {
+	const fetchParams: FetchParams = await getFetchParams()
+	const vacanciesJSON: Vacancies = await getJSON('/2.0/vacancies/', {}, fetchParams)
+	const cataloguesJSON: Catalog[] = await getJSON('/2.0/catalogues/', {}, fetchParams)
 	return {
-		vacancies: vacanciesJSON,
-		catalogues: cataloguesJSON,
+		props: {
+			vacancies: vacanciesJSON,
+			catalogues: cataloguesJSON,
+		},
 	}
 }

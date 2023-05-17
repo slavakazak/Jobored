@@ -1,4 +1,20 @@
+import { useState } from 'react'
+import { useRouter } from 'next/router'
+
 export function Search() {
+	const router = useRouter()
+	const [keyword, setKeyword] = useState(router.query.keyword || '')
+
+	function searchClickHandler() {
+		router.push({
+			pathname: router.pathname,
+			query: {
+				...router.query,
+				keyword: keyword,
+			},
+		})
+	}
+
 	return (
 		<div className='search'>
 			<label htmlFor='search'>
@@ -10,8 +26,17 @@ export function Search() {
 					/>
 				</svg>
 			</label>
-			<input type='search' id='search' name='search' placeholder='Введите название вакансии' />
-			<button className='search-button'>Поиск</button>
+			<input
+				type='search'
+				id='search'
+				name='search'
+				value={keyword}
+				onChange={e => setKeyword(e.target.value)}
+				placeholder='Введите название вакансии'
+			/>
+			<button className='search-button' onClick={searchClickHandler}>
+				Поиск
+			</button>
 		</div>
 	)
 }

@@ -1,12 +1,13 @@
 import Link from 'next/link'
 import { PaginationIcon } from './icons/PaginationIcon'
 import { useRouter } from 'next/router'
+import { searchParams } from '@/utils/searchParams'
 
-export function Pagination({ total, path }: { total: number; path: string }) {
+export function Pagination({ total }: { total: number }) {
 	const router = useRouter()
 
 	function getLinks() {
-		let number = router.query.number && router.query.number !== '0' ? +router.query.number : 1
+		let page = router.query.page && router.query.page !== '0' ? +router.query.page : 1
 		const pages = Math.ceil(total / 4)
 		let firstPage = false
 		let lastPage = false
@@ -15,22 +16,26 @@ export function Pagination({ total, path }: { total: number; path: string }) {
 			links = []
 		} else if (pages === 2) {
 			links = [1, 2]
-		} else if (number === 1) {
+		} else if (page === 1) {
 			links = [1, 2, 3]
 			firstPage = true
-		} else if (number === pages) {
+		} else if (page === pages) {
 			links = [pages - 2, pages - 1, pages]
 			lastPage = true
 		} else {
-			links = [number - 1, number, number + 1]
+			links = [page - 1, page, page + 1]
 		}
 
 		return {
 			links,
-			number,
+			page,
 			firstPage,
 			lastPage,
 		}
+	}
+
+	function getPath(page: number) {
+		return router.pathname + searchParams({ ...router.query, page: String(page) })
 	}
 
 	const linksObj = getLinks()
@@ -45,12 +50,12 @@ export function Pagination({ total, path }: { total: number; path: string }) {
 						<PaginationIcon />
 					</div>
 				) : (
-					<Link href={path + (linksObj.number - 1)} className={'pagination-link previous'}>
+					<Link href={getPath(linksObj.page - 1)} className={'pagination-link previous'}>
 						<PaginationIcon />
 					</Link>
 				)}
 				{linksObj.links.map((link, i) => {
-					if (link === linksObj.number) {
+					if (link === linksObj.page) {
 						return (
 							<div key={i} className='pagination-link active'>
 								{link}
@@ -58,7 +63,7 @@ export function Pagination({ total, path }: { total: number; path: string }) {
 						)
 					} else {
 						return (
-							<Link key={i} href={path + link} className='pagination-link'>
+							<Link key={i} href={getPath(link)} className='pagination-link'>
 								{link}
 							</Link>
 						)
@@ -69,7 +74,7 @@ export function Pagination({ total, path }: { total: number; path: string }) {
 						<PaginationIcon />
 					</div>
 				) : (
-					<Link href={path + (linksObj.number + 1)} className={'pagination-link next'}>
+					<Link href={getPath(linksObj.page + 1)} className={'pagination-link next'}>
 						<PaginationIcon />
 					</Link>
 				)}

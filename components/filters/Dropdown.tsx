@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { DropdownArrow } from '../icons/DropdownArrow'
 
-export interface Option {
+interface Option {
 	title: string
 	key: number
 }
@@ -10,11 +10,12 @@ interface Dropdown {
 	name: string
 	title?: string
 	placeholder?: string
-	options?: Option[]
+	options?: Option[] | null
 	value: string
 	setValue: React.Dispatch<React.SetStateAction<string>>
 	currentOption: number | null
 	setCurrentOption: React.Dispatch<React.SetStateAction<number | null>>
+	dataElem?: string
 }
 
 export function Dropdown({
@@ -26,18 +27,24 @@ export function Dropdown({
 	setValue,
 	currentOption,
 	setCurrentOption,
+	dataElem,
 }: Dropdown) {
 	const [dropdown, setDropdown] = useState(false)
 	const inputRef = useRef<HTMLInputElement>(null)
 	const [optionsState, setOptionsState] = useState(options)
 
+	useEffect(() => {
+		let filteredOptions = options
+		if (!currentOption && options) {
+			filteredOptions = options.filter(option => option.title.trim().toLowerCase().includes(value.trim().toLowerCase()))
+		}
+		setOptionsState(filteredOptions)
+	}, [options, value])
+
 	function inputChangeHandler(e: React.ChangeEvent<HTMLInputElement>) {
 		const text = e.target.value
 		setValue(text)
 		setCurrentOption(null)
-		const filteredOptions =
-			options && options.filter(option => option.title.trim().toLowerCase().includes(text.trim().toLowerCase()))
-		setOptionsState(filteredOptions)
 	}
 
 	function SVGMouseHandler(e: React.MouseEvent<SVGSVGElement>) {
@@ -69,6 +76,12 @@ export function Dropdown({
 		}
 	}
 
+	function selectChangeHandler(e: React.ChangeEvent<HTMLSelectElement>) {
+		setCurrentOption(+e.target.value)
+		setValue(options?.find(option => option.key === +e.target.value)?.title || '')
+		setOptionsState(options)
+	}
+
 	return (
 		<div className='input-group'>
 			{title && <label htmlFor={name}>{title}</label>}
@@ -85,6 +98,19 @@ export function Dropdown({
 					onBlur={() => setDropdown(false)}
 					autoComplete='off'
 				/>
+				<select
+					name={name + '-select'}
+					onChange={selectChangeHandler}
+					value={currentOption ? String(currentOption) : ''}
+					data-elem={dataElem}>
+					<option value='' />
+					{options &&
+						options.map(option => (
+							<option key={option.key} value={option.key}>
+								{option.title}
+							</option>
+						))}
+				</select>
 				{optionsState && optionsState.length !== 0 && (
 					<>
 						<DropdownArrow dropdown={dropdown} SVGMouseHandler={SVGMouseHandler} />

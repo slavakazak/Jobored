@@ -1,17 +1,11 @@
-import React from 'react'
 import { EmptyStateIcon } from './icons/EmptyStateIcon'
 import Link from 'next/link'
 
-interface EmptyState {
-	text: string
-	link?: boolean
-}
-
-export function EmptyState({ text, link = true }: EmptyState) {
+export function EmptyState({ text, link = true }: { text: string; link?: boolean }) {
 	return (
 		<div className='empty-state'>
 			<EmptyStateIcon />
-			<h2>Упс, здесь еще ничего нет!</h2>
+			<h2>{text}</h2>
 			{link && <Link href={'/'}>Поиск Вакансий</Link>}
 		</div>
 	)

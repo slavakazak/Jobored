@@ -1,3 +1,7 @@
+import { ParsedUrlQuery } from 'querystring'
+import { Vacancies } from '@/components/Interfaces/Jobs'
+import { Catalog } from '@/components/Interfaces/Catalog'
+
 interface JSON {
 	[key: string]: string
 }
@@ -43,4 +47,18 @@ export async function getJSON(path: string, searchParams: JSON, fetchParams: Fet
 	}
 	const response = await fetch(url, fetchParams)
 	return await response.json()
+}
+
+export async function getMainPageProps(query: ParsedUrlQuery) {
+	const fetchParams: FetchParams = await getFetchParams()
+	const vacanciesSearchParams: { [key: string]: string } = {
+		count: '4',
+	}
+	for (let key in query) {
+		if (key === 'page') vacanciesSearchParams.page = String(query.page && +query.page - 1)
+		else vacanciesSearchParams[key] = String(query[key])
+	}
+	const vacanciesJSON: Vacancies = await getJSON('/2.0/vacancies/', vacanciesSearchParams, fetchParams)
+	const cataloguesJSON: Catalog[] = await getJSON('/2.0/catalogues/', {}, fetchParams)
+	return { vacanciesJSON, cataloguesJSON }
 }

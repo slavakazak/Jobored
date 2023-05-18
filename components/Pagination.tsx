@@ -16,6 +16,11 @@ export function Pagination({ total }: { total: number }) {
 			links = []
 		} else if (pages === 2) {
 			links = [1, 2]
+			if (page === 1) {
+				firstPage = true
+			} else {
+				lastPage = true
+			}
 		} else if (page === 1) {
 			links = [1, 2, 3]
 			firstPage = true

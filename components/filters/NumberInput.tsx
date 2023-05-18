@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { SmallArrow } from '../icons/SmallArrow'
 
 interface NumberInput {
@@ -7,14 +6,12 @@ interface NumberInput {
 	step?: number
 	value: string
 	setValue: React.Dispatch<React.SetStateAction<string>>
+	dataElem?: string
 }
 
-export function NumberInput({ name, placeholder = '', step = 1, value, setValue }: NumberInput) {
+export function NumberInput({ name, placeholder = '', step = 1, value, setValue, dataElem }: NumberInput) {
 	function increment(step: number) {
-		return () =>
-			setValue(previous => {
-				return +previous + step < 0 ? '0' : (+previous + step).toString()
-			})
+		return () => setValue(previous => (+previous + step < 0 ? '0' : (+previous + step).toString()))
 	}
 
 	return (
@@ -26,6 +23,7 @@ export function NumberInput({ name, placeholder = '', step = 1, value, setValue 
 				placeholder={placeholder}
 				value={value}
 				onChange={e => setValue(e.target.value)}
+				data-elem={dataElem}
 			/>
 			<SmallArrow className='arrow-top' onClick={increment(step)} />
 			<SmallArrow className='arrow-bottom' onClick={increment(-step)} />

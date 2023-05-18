@@ -5,10 +5,40 @@ import { Filters } from '@/components/filters/Filters'
 import { Search } from '@/components/Search'
 import { JobCard } from '@/components/JobCard'
 import { Pagination } from '@/components/Pagination'
-import { GetServerSideProps } from 'next'
-import { getFetchParams, getJSON, FetchParams } from '@/utils/startupSummerAPI'
+import { NextPageContext } from 'next'
+import { getMainPageProps } from '@/utils/startupSummerAPI'
+import { Loader } from '@/components/Loader'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { EmptyState } from '@/components/EmptyState'
 
-export default function Home({ vacancies, catalogues }: { vacancies: Vacancies; catalogues: Catalog[] }) {
+export default function Home({
+	vacancies: serverVacancies,
+	catalogues: serverCatalogues,
+}: {
+	vacancies: Vacancies
+	catalogues: Catalog[]
+}) {
+	const router = useRouter()
+	const [vacancies, setVacancies] = useState<Vacancies | null>(serverVacancies)
+	const [catalogues, setCatalogues] = useState<Catalog[] | null>(serverCatalogues)
+	const [maxPage, setMaxPage] = useState(
+		serverVacancies ? Math.ceil((serverVacancies.total > 500 ? 500 : serverVacancies.total) / 4) : 0
+	)
+	useEffect(() => {
+		async function load() {
+			setVacancies(null)
+			setCatalogues(null)
+			const { vacanciesJSON, cataloguesJSON } = await getMainPageProps(router.query)
+			setVacancies(vacanciesJSON)
+			setCatalogues(cataloguesJSON)
+			setMaxPage(vacancies ? Math.ceil((vacancies.total > 500 ? 500 : vacancies.total) / 4) : 0)
+		}
+		if (!serverVacancies || !serverCatalogues) {
+			load()
+		}
+	}, [router])
+
 	return (
 		<MainLayout title='Jobored | Поиск вакансий' description='Страница поиска вакансий'>
 			<div className='main-grid'>
@@ -17,46 +47,37 @@ export default function Home({ vacancies, catalogues }: { vacancies: Vacancies; 
 				</aside>
 				<main>
 					<Search />
-					{vacancies.objects.map(job => (
-						<JobCard key={job.id} job={job} />
-					))}
-					<Pagination total={vacancies.total > 500 ? 500 : vacancies.total} />
+					{vacancies ? (
+						vacancies.objects.length === 0 ||
+						(router.query.page && (+router.query.page > maxPage || +router.query.page < 1)) ? (
+							<EmptyState text='Упс, здесь еще ничего нет!' link={false} />
+						) : (
+							<>
+								{vacancies.objects.map(job => (
+									<JobCard key={job.id} job={job} />
+								))}
+								<Pagination total={vacancies.total > 500 ? 500 : vacancies.total} />
+							</>
+						)
+					) : (
+						<Loader />
+					)}
 				</main>
 			</div>
 		</MainLayout>
 	)
 }
 
-export const getServerSideProps: GetServerSideProps<{
-	vacancies: Vacancies
-	catalogues: Catalog[]
-}> = async context => {
-	const fetchParams: FetchParams = await getFetchParams()
-	const vacanciesSearchParams: { [key: string]: string } = {
-		count: '4',
-	}
-	for (let key in context.query) {
-		if (key === 'page') vacanciesSearchParams.page = String(context.query.page && +context.query.page - 1)
-		else vacanciesSearchParams[key] = String(context.query[key])
-	}
-	const vacanciesJSON: Vacancies = await getJSON('/2.0/vacancies/', vacanciesSearchParams, fetchParams)
-	const cataloguesJSON: Catalog[] = await getJSON('/2.0/catalogues/', {}, fetchParams)
-	const total = vacanciesJSON.total > 500 ? 500 : vacanciesJSON.total
-	const maxPage = Math.ceil(total / 4)
-	if (
-		!vacanciesJSON ||
-		!vacanciesJSON.objects ||
-		vacanciesJSON.objects.length === 0 ||
-		(context.query.page && (+context.query.page > maxPage || +context.query.page < 1))
-	) {
+Home.getInitialProps = async (context: NextPageContext) => {
+	if (!context.req) {
 		return {
-			notFound: true,
+			vacancies: null,
+			catalogues: null,
 		}
 	}
+	const { vacanciesJSON, cataloguesJSON } = await getMainPageProps(context.query)
 	return {
-		props: {
-			vacancies: vacanciesJSON,
-			catalogues: cataloguesJSON,
-		},
+		vacancies: vacanciesJSON,
+		catalogues: cataloguesJSON,
 	}
 }

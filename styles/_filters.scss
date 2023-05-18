@@ -143,6 +143,10 @@
 		}
 	}
 
+	select {
+		display: none;
+	}
+
 	.dropdown {
 		background: $white;
 		width: 100%;

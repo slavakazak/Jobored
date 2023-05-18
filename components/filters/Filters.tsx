@@ -4,13 +4,15 @@ import { Range } from './Range'
 import { Catalog } from '../Interfaces/Catalog'
 import { useRouter } from 'next/router'
 
-export function Filters({ catalogues }: { catalogues: Catalog[] }) {
+export function Filters({ catalogues }: { catalogues: Catalog[] | null }) {
 	const router = useRouter()
 
 	const [cataloguesKey, setCataloguesKey] = useState<number | null>(
 		router.query.catalogues ? +router.query.catalogues : null
 	)
-	const [industry, setIndustry] = useState(catalogues.find(catalog => catalog.key === cataloguesKey)?.title || '')
+	const [industry, setIndustry] = useState(
+		(catalogues && catalogues.find(catalog => catalog.key === cataloguesKey)?.title) || ''
+	)
 	const [paymentFrom, setPaymentFrom] = useState(router.query.payment_to ? String(router.query.payment_from) : '')
 	const [paymentTo, setPaymentTo] = useState(router.query.payment_to ? String(router.query.payment_to) : '')
 
@@ -60,6 +62,7 @@ export function Filters({ catalogues }: { catalogues: Catalog[] }) {
 				setValue={setIndustry}
 				currentOption={cataloguesKey}
 				setCurrentOption={setCataloguesKey}
+				dataElem='industry-select'
 			/>
 			<Range
 				name='salary'
@@ -71,8 +74,10 @@ export function Filters({ catalogues }: { catalogues: Catalog[] }) {
 				setFrom={setPaymentFrom}
 				to={paymentTo}
 				setTo={setPaymentTo}
+				dataElemFrom='salary-from-input'
+				dataElemTo='salary-to-input'
 			/>
-			<button className='apply' onClick={applyClickHandler}>
+			<button className='apply' onClick={applyClickHandler} data-elem='search-button'>
 				Применить
 			</button>
 		</div>

@@ -11,16 +11,16 @@ export interface FetchParams {
 }
 
 export async function getFetchParams() {
-	const base = 'https://startup-summer-2023-proxy.onrender.com'
-	const xSecretKey = 'GEU4nvd3rej*jeh.eqp'
+	const base = process.env.NEXT_PUBLIC_BASE
+	const xSecretKey = process.env.NEXT_PUBLIC_X_SECRET_KEY || ''
 
 	const passwordPath = '/2.0/oauth2/password'
 	const passwordUrl = new URL(passwordPath, base)
 	const passwordSearchParams: { [key: string]: string } = {
-		login: 'sergei.stralenia@gmail.com',
-		password: 'paralect123',
-		client_id: '2356',
-		client_secret: 'v3.r.137440105.ffdbab114f92b821eac4e21f485343924a773131.06c3bdbb8446aeb91c35b80c42ff69eb9c457948',
+		login: process.env.NEXT_PUBLIC_LOGIN || '',
+		password: process.env.NEXT_PUBLIC_PASSWORD || '',
+		client_id: process.env.NEXT_PUBLIC_CLIENT_ID || '',
+		client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET || '',
 		hr: '0',
 	}
 	for (let key in passwordSearchParams) {
@@ -40,7 +40,7 @@ export async function getFetchParams() {
 }
 
 export async function getJSON(path: string, searchParams: JSON, fetchParams: FetchParams) {
-	const base = 'https://startup-summer-2023-proxy.onrender.com'
+	const base = process.env.NEXT_PUBLIC_BASE
 	const url = new URL(path, base)
 	for (let key in searchParams) {
 		url.searchParams.set(key, searchParams[key])

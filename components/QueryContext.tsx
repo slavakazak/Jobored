@@ -1,32 +1,37 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { useRouter } from 'next/router'
 
+type set<T> = React.Dispatch<React.SetStateAction<T>>
+
 interface QueryContext {
 	industry: string
-	setIndustry: React.Dispatch<React.SetStateAction<string>>
+	setIndustry: set<string>
 	cataloguesKey: number | null
-	setCataloguesKey: React.Dispatch<React.SetStateAction<number | null>>
+	setCataloguesKey: set<number | null>
 	paymentFrom: string
-	setPaymentFrom: React.Dispatch<React.SetStateAction<string>>
+	setPaymentFrom: set<string>
 	paymentTo: string
-	setPaymentTo: React.Dispatch<React.SetStateAction<string>>
+	setPaymentTo: set<string>
 	keyword: string
-	setKeyword: React.Dispatch<React.SetStateAction<string>>
+	setKeyword: set<string>
 	reset: () => void
 	apply: () => void
 }
 
+function plugValue(value: React.SetStateAction<string>) {}
+function plugId(id: React.SetStateAction<number | null>) {}
+
 const QueryContext = createContext<QueryContext>({
 	industry: '',
-	setIndustry(value: React.SetStateAction<string>) {},
+	setIndustry: plugValue,
 	cataloguesKey: null,
-	setCataloguesKey(id: React.SetStateAction<number | null>) {},
+	setCataloguesKey: plugId,
 	paymentFrom: '',
-	setPaymentFrom(value: React.SetStateAction<string>) {},
+	setPaymentFrom: plugValue,
 	paymentTo: '',
-	setPaymentTo(value: React.SetStateAction<string>) {},
+	setPaymentTo: plugValue,
 	keyword: '',
-	setKeyword(value: React.SetStateAction<string>) {},
+	setKeyword: plugValue,
 	reset() {},
 	apply() {},
 })

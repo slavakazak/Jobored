@@ -11,6 +11,7 @@ import { Loader } from '@/components/Loader'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { EmptyState } from '@/components/EmptyState'
+import { QueryProvider } from '@/components/QueryContext'
 
 export default function Home({
 	vacancies: serverVacancies,
@@ -40,31 +41,33 @@ export default function Home({
 	}, [router])
 
 	return (
-		<MainLayout title='Jobored | Поиск вакансий' description='Страница поиска вакансий'>
-			<div className='main-grid'>
-				<aside>
-					<Filters catalogues={catalogues} />
-				</aside>
-				<main>
-					<Search />
-					{vacancies ? (
-						vacancies.objects.length === 0 ||
-						(router.query.page && (+router.query.page > maxPage || +router.query.page < 1)) ? (
-							<EmptyState text='Упс, здесь еще ничего нет!' link={false} />
+		<QueryProvider>
+			<MainLayout title='Jobored | Поиск вакансий' description='Страница поиска вакансий'>
+				<div className='main-grid'>
+					<aside>
+						<Filters catalogues={catalogues} />
+					</aside>
+					<main>
+						<Search />
+						{vacancies ? (
+							vacancies.objects.length === 0 ||
+							(router.query.page && (+router.query.page > maxPage || +router.query.page < 1)) ? (
+								<EmptyState text='Упс, здесь еще ничего нет!' link={false} />
+							) : (
+								<>
+									{vacancies.objects.map(job => (
+										<JobCard key={job.id} job={job} />
+									))}
+									<Pagination total={vacancies.total > 500 ? 500 : vacancies.total} />
+								</>
+							)
 						) : (
-							<>
-								{vacancies.objects.map(job => (
-									<JobCard key={job.id} job={job} />
-								))}
-								<Pagination total={vacancies.total > 500 ? 500 : vacancies.total} />
-							</>
-						)
-					) : (
-						<Loader />
-					)}
-				</main>
-			</div>
-		</MainLayout>
+							<Loader />
+						)}
+					</main>
+				</div>
+			</MainLayout>
+		</QueryProvider>
 	)
 }
 

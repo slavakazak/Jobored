@@ -1,20 +1,15 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { SearchIcon } from './icons/SearchIcon'
+import { useQuery } from './QueryContext'
 
 export function Search() {
 	const router = useRouter()
-	const [keyword, setKeyword] = useState(router.query.keyword || '')
+	const query = useQuery()
 
-	function searchClickHandler() {
-		router.push({
-			pathname: router.pathname,
-			query: {
-				...router.query,
-				keyword: keyword,
-			},
-		})
-	}
+	useEffect(() => {
+		query.setKeyword(router.query.keyword ? String(router.query.keyword) : '')
+	}, [])
 
 	return (
 		<div className='search'>
@@ -25,12 +20,12 @@ export function Search() {
 				type='search'
 				id='search'
 				name='search'
-				value={keyword}
-				onChange={e => setKeyword(e.target.value)}
+				value={query.keyword}
+				onChange={e => query.setKeyword(e.target.value)}
 				placeholder='Введите название вакансии'
 				data-elem='search-input'
 			/>
-			<button className='search-button' onClick={searchClickHandler} data-elem='search-button'>
+			<button className='search-button' onClick={query.apply} data-elem='search-button'>
 				Поиск
 			</button>
 		</div>

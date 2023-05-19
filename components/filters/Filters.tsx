@@ -1,45 +1,27 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Dropdown } from './Dropdown'
 import { Range } from './Range'
 import { Catalog } from '../Interfaces/Catalog'
 import { useRouter } from 'next/router'
+import { useQuery } from '../QueryContext'
 
 export function Filters({ catalogues }: { catalogues: Catalog[] | null }) {
 	const router = useRouter()
+	const query = useQuery()
 
-	const [cataloguesKey, setCataloguesKey] = useState<number | null>(
-		router.query.catalogues ? +router.query.catalogues : null
-	)
-	const [industry, setIndustry] = useState(
-		(catalogues && catalogues.find(catalog => catalog.key === cataloguesKey)?.title) || ''
-	)
-	const [paymentFrom, setPaymentFrom] = useState(router.query.payment_to ? String(router.query.payment_from) : '')
-	const [paymentTo, setPaymentTo] = useState(router.query.payment_to ? String(router.query.payment_to) : '')
-
-	function reset() {
-		setIndustry('')
-		setCataloguesKey(null)
-		setPaymentFrom('')
-		setPaymentTo('')
-	}
-
-	function applyClickHandler() {
-		router.push({
-			pathname: router.pathname,
-			query: {
-				...router.query,
-				payment_from: paymentFrom,
-				payment_to: paymentTo,
-				catalogues: cataloguesKey,
-			},
-		})
-	}
+	useEffect(() => {
+		const key = router.query.catalogues ? +router.query.catalogues : null
+		query.setCataloguesKey(key)
+		query.setIndustry((catalogues && catalogues.find(catalog => catalog.key === key)?.title) || '')
+		query.setPaymentFrom(router.query.payment_from ? String(router.query.payment_from) : '')
+		query.setPaymentTo(router.query.payment_to ? String(router.query.payment_to) : '')
+	}, [])
 
 	return (
 		<div className='filters'>
 			<div className='filters-head'>
 				<h2>Фильтры</h2>
-				<div className='reset' onClick={reset}>
+				<div className='reset' onClick={query.reset}>
 					<span>Сбросить все</span>
 					<svg viewBox='0 0 16 16' fill='none'>
 						<line x1='11.7425' y1='4.44219' x2='4.44197' y2='11.7427' strokeWidth='1.25' />
@@ -58,10 +40,10 @@ export function Filters({ catalogues }: { catalogues: Catalog[] | null }) {
 						key: catalog.key,
 					}))
 				}
-				value={industry}
-				setValue={setIndustry}
-				currentOption={cataloguesKey}
-				setCurrentOption={setCataloguesKey}
+				value={query.industry}
+				setValue={query.setIndustry}
+				currentOption={query.cataloguesKey}
+				setCurrentOption={query.setCataloguesKey}
 				dataElem='industry-select'
 			/>
 			<Range
@@ -70,14 +52,14 @@ export function Filters({ catalogues }: { catalogues: Catalog[] | null }) {
 				placeholderFrom='От'
 				placeholderTo='До'
 				step={1000}
-				from={paymentFrom}
-				setFrom={setPaymentFrom}
-				to={paymentTo}
-				setTo={setPaymentTo}
+				from={query.paymentFrom}
+				setFrom={query.setPaymentFrom}
+				to={query.paymentTo}
+				setTo={query.setPaymentTo}
 				dataElemFrom='salary-from-input'
 				dataElemTo='salary-to-input'
 			/>
-			<button className='apply' onClick={applyClickHandler} data-elem='search-button'>
+			<button className='apply' onClick={query.apply} data-elem='search-button'>
 				Применить
 			</button>
 		</div>

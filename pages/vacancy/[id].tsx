@@ -13,16 +13,16 @@ export default function Vacancy({ vacancy: serverVacancy }: { vacancy: Job }) {
 	const [vacancy, setVacancy] = useState<Job | null>(serverVacancy)
 	useEffect(() => {
 		async function load() {
+			const fetchParams: FetchParams = await getFetchParams()
+			const vacancyJSON: Job = await getJSON(`/2.0/vacancies/${router.query.id}/`, {}, fetchParams)
+			setVacancy(vacancyJSON)
+		}
+		if (!serverVacancy) {
 			try {
-				const fetchParams: FetchParams = await getFetchParams()
-				const vacancyJSON: Job = await getJSON(`/2.0/vacancies/${router.query.id}/`, {}, fetchParams)
-				setVacancy(vacancyJSON)
+				load()
 			} catch (e) {
 				console.log(e)
 			}
-		}
-		if (!serverVacancy) {
-			load()
 		}
 	}, [])
 	return (

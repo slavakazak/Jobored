@@ -30,17 +30,17 @@ export default function Home({
 		async function load() {
 			setVacancies(null)
 			setCatalogues(null)
+			const { vacanciesJSON, cataloguesJSON } = await getMainPageProps(router.query)
+			setVacancies(vacanciesJSON)
+			setCatalogues(cataloguesJSON)
+			setMaxPage(vacancies ? Math.ceil((vacancies.total > 500 ? 500 : vacancies.total) / 4) : 0)
+		}
+		if (!serverVacancies || !serverCatalogues) {
 			try {
-				const { vacanciesJSON, cataloguesJSON } = await getMainPageProps(router.query)
-				setVacancies(vacanciesJSON)
-				setCatalogues(cataloguesJSON)
-				setMaxPage(vacancies ? Math.ceil((vacancies.total > 500 ? 500 : vacancies.total) / 4) : 0)
+				load()
 			} catch (e) {
 				console.log(e)
 			}
-		}
-		if (!serverVacancies || !serverCatalogues) {
-			load()
 		}
 	}, [router])
 
@@ -54,7 +54,8 @@ export default function Home({
 					<main>
 						<Search />
 						{vacancies ? (
-							vacancies.objects.length === 0 ||
+							!vacancies.objects ||
+							(vacancies.objects && vacancies.objects.length === 0) ||
 							(router.query.page && (+router.query.page > maxPage || +router.query.page < 1)) ? (
 								<EmptyState text='Упс, здесь еще ничего нет!' link={false} />
 							) : (

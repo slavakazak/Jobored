@@ -13,9 +13,13 @@ export default function Vacancy({ vacancy: serverVacancy }: { vacancy: Job }) {
 	const [vacancy, setVacancy] = useState<Job | null>(serverVacancy)
 	useEffect(() => {
 		async function load() {
-			const fetchParams: FetchParams = await getFetchParams()
-			const vacancyJSON: Job = await getJSON(`/2.0/vacancies/${router.query.id}/`, {}, fetchParams)
-			setVacancy(vacancyJSON)
+			try {
+				const fetchParams: FetchParams = await getFetchParams()
+				const vacancyJSON: Job = await getJSON(`/2.0/vacancies/${router.query.id}/`, {}, fetchParams)
+				setVacancy(vacancyJSON)
+			} catch (e) {
+				console.log(e)
+			}
 		}
 		if (!serverVacancy) {
 			load()
@@ -65,9 +69,16 @@ Vacancy.getInitialProps = async (context: NextPageContext) => {
 			vacancy: null,
 		}
 	}
-	const fetchParams: FetchParams = await getFetchParams()
-	const vacancyJSON: Job = await getJSON(`/2.0/vacancies/${context.query.id}/`, {}, fetchParams)
-	return {
-		vacancy: vacancyJSON,
+	try {
+		const fetchParams: FetchParams = await getFetchParams()
+		const vacancyJSON: Job = await getJSON(`/2.0/vacancies/${context.query.id}/`, {}, fetchParams)
+		return {
+			vacancy: vacancyJSON,
+		}
+	} catch (e) {
+		console.log(e)
+		return {
+			vacancy: null,
+		}
 	}
 }

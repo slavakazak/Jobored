@@ -30,10 +30,14 @@ export default function Home({
 		async function load() {
 			setVacancies(null)
 			setCatalogues(null)
-			const { vacanciesJSON, cataloguesJSON } = await getMainPageProps(router.query)
-			setVacancies(vacanciesJSON)
-			setCatalogues(cataloguesJSON)
-			setMaxPage(vacancies ? Math.ceil((vacancies.total > 500 ? 500 : vacancies.total) / 4) : 0)
+			try {
+				const { vacanciesJSON, cataloguesJSON } = await getMainPageProps(router.query)
+				setVacancies(vacanciesJSON)
+				setCatalogues(cataloguesJSON)
+				setMaxPage(vacancies ? Math.ceil((vacancies.total > 500 ? 500 : vacancies.total) / 4) : 0)
+			} catch (e) {
+				console.log(e)
+			}
 		}
 		if (!serverVacancies || !serverCatalogues) {
 			load()
@@ -78,9 +82,17 @@ Home.getInitialProps = async (context: NextPageContext) => {
 			catalogues: null,
 		}
 	}
-	const { vacanciesJSON, cataloguesJSON } = await getMainPageProps(context.query)
-	return {
-		vacancies: vacanciesJSON,
-		catalogues: cataloguesJSON,
+	try {
+		const { vacanciesJSON, cataloguesJSON } = await getMainPageProps(context.query)
+		return {
+			vacancies: vacanciesJSON,
+			catalogues: cataloguesJSON,
+		}
+	} catch (e) {
+		console.log(e)
+		return {
+			vacancies: null,
+			catalogues: null,
+		}
 	}
 }

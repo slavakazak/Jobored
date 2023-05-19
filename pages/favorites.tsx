@@ -15,26 +15,30 @@ export default function Favorites() {
 	useEffect(() => {
 		async function load() {
 			setVacancies(null)
-			const { page } = router.query
-			const fetchParams: FetchParams = await getFetchParams()
-			const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
-			const favoritesQuery = favorites.map((favorite: number) => 'ids[]=' + favorite).join('&')
-			const vacanciesJSON: Vacancies = await getJSON(
-				'/2.0/vacancies/?' + favoritesQuery,
-				{
-					count: '4',
-					page: String(page && +page - 1),
-				},
-				fetchParams
-			)
-			const total = vacanciesJSON.total > 500 ? 500 : vacanciesJSON.total
-			const maxPage = Math.ceil(total / 4)
-			if (vacanciesJSON.objects.length === 0 || favorites.length === 0 || (page && (+page > maxPage || +page < 1))) {
-				setEmpty(true)
-			} else {
-				setEmpty(false)
+			try {
+				const { page } = router.query
+				const fetchParams: FetchParams = await getFetchParams()
+				const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+				const favoritesQuery = favorites.map((favorite: number) => 'ids[]=' + favorite).join('&')
+				const vacanciesJSON: Vacancies = await getJSON(
+					'/2.0/vacancies/?' + favoritesQuery,
+					{
+						count: '4',
+						page: String(page && +page - 1),
+					},
+					fetchParams
+				)
+				const total = vacanciesJSON.total > 500 ? 500 : vacanciesJSON.total
+				const maxPage = Math.ceil(total / 4)
+				if (vacanciesJSON.objects.length === 0 || favorites.length === 0 || (page && (+page > maxPage || +page < 1))) {
+					setEmpty(true)
+				} else {
+					setEmpty(false)
+				}
+				setVacancies(vacanciesJSON)
+			} catch (e) {
+				console.log(e)
 			}
-			setVacancies(vacanciesJSON)
 		}
 
 		load()
